@@ -1,0 +1,4 @@
+venv
+egg
+*.pyc
+*.egg-info
