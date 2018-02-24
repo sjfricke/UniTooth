@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Runtime.InteropServices;
-using System.Net.Sockets;
 
 public class unitooth : MonoBehaviour {
 
@@ -11,16 +10,39 @@ public class unitooth : MonoBehaviour {
     private static int BTHPROTO_RFCOMM = 3; //RFCOMM protocol type
     private static int INVALID_SOCKET = -1; //invalid socket identifier
     private static int uniSocket;
+    public byte[] btaddr;
 
     public string macAddress;
+
+    public struct SOCKADDR_BTH
+    {
+        public ushort addressFamily;
+        public byte[] btAddr;
+        public System.Guid serviceClassId;
+        public ulong port;
+    };
 
 #if UNITY_STANDALONE_WIN || UNITY_EDITOR
     [DllImport("ws2_32.dll", EntryPoint = "socket")]
     public static extern int socket(int af, int type, int protocol);
+    [DllImport("ws2_32.dll", EntryPoint = "connect")]
+    public static extern int connect(int s, SOCKADDR_BTH name, int namelen);
+    [DllImport("ws2_32.dll", EntryPoint = "WSAGetLastError")]
+    public static extern int WSAGetLastError();
 
     public static int socket()
     {
         return socket(AF_BTH, SOCK_STREAM, BTHPROTO_RFCOMM);
+    }
+
+    public static int connect(int socketfd, byte[] btaddr)
+    {
+        SOCKADDR_BTH newSocketAddr = new SOCKADDR_BTH();
+        newSocketAddr.addressFamily = (ushort)AF_BTH;
+        newSocketAddr.btAddr = btaddr;
+        newSocketAddr.port = 0;
+        return connect(socketfd, newSocketAddr, sizeof(ushort) + 6 + sizeof(ulong));
+
     }
 #endif
 
@@ -50,10 +72,16 @@ public class unitooth : MonoBehaviour {
                 bytes[j] = macAddress.Substring(i, 2);
                 j++;
             }
-            byte[] btaddr = new byte[6];
+            btaddr = new byte[6];
             for (int i = 0; i < 6; i++)
             {
                 btaddr[i] = byte.Parse(bytes[i], System.Globalization.NumberStyles.HexNumber);
+            }
+            int res = connect(uniSocket, btaddr);
+            Debug.Log("Result: " + res);
+            if (res == -1)
+            {
+                Debug.Log("Error: " + WSAGetLastError());
             }
         } else {
             Debug.LogError("Please make sure to enter MAC Address of target device into script");
