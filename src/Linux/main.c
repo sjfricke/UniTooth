@@ -3,7 +3,7 @@
 
 #include "unitooth.h"
 
-#define USAGE	"ut {connect,listen,find} ...\n"
+#define USAGE	"usage: ut {connect,listen,find} ...\n"
 
 int main(int argc, char **argv) {
 

@@ -8,6 +8,9 @@ CFLAGS = -Werror -Wall
 LIBS += -lbluetooth
 
 OBJECTS += main.o
+OBJECTS += find.o
+OBJECTS += listen.o
+OBJECTS += connect.o
 
 %.o: %.c
 	+@echo "building '$(notdir $<)'"
