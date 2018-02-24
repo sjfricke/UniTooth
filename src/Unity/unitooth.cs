@@ -9,6 +9,7 @@ public class unitooth : MonoBehaviour {
     private static int AF_BTH = 32; //bluetooth address family
     private static int SOCK_STREAM = 1; //socket type of TCP
     private static int BTHPROTO_RFCOMM = 3; //RFCOMM protocol type
+    private static int INVALID_SOCKET = -1; //invalid socket identifier
     private static int uniSocket;
 
 #if UNITY_STANDALONE_WIN || UNITY_EDITOR
@@ -24,7 +25,11 @@ public class unitooth : MonoBehaviour {
     // Use this for initialization
     void Start () {
         uniSocket = socket();
-        Debug.Log("Data: " + uniSocket);
+        if (uniSocket == INVALID_SOCKET)
+        {
+            Debug.LogError("Unable to start bluetooth. Please make sure Bluetooth is enabled on your computer");
+        }
+        
 	}
 	
 	// Update is called once per frame
