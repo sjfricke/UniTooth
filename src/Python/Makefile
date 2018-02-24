@@ -13,6 +13,6 @@ install: venv
 clean:
 	@find -name '*.pyc' -delete
 
-wipe:
+wipe: clean
 	@rm -rf $(PROJECT).egg-info
 	@rm -rf venv

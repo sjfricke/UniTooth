@@ -9,7 +9,7 @@ setup(
     author_email="vkottler@wisc.edu",
     license="MIT",
     packages=["unitooth"],
-    isntall_requires=["PyBluez"],
+    install_requires=["pybluez"],
     entry_points = {
         "console_scripts": ["ut=unitooth.entry:main"]
     },
