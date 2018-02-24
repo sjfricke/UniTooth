@@ -1,23 +1,21 @@
-.PHONY: clean all
-.DEFAULT_GOAL = all
+.PHONY: clean
+.DEFAULT_GOAL = ut
 
-CFLAGS = 
 TOOLCHAIN = 
+
+CFLAGS = -Werror -Wall
 
 LIBS += -lbluetooth
 
-OUTPUTS += master.elf
-OUTPUTS += slave.elf
+OBJECTS += main.o
 
 %.o: %.c
 	+@echo "building '$(notdir $<)'"
 	@$(TOOLCHAIN)gcc $(CFLAGS) -c -o $@ $< $(LIBS)
 
-%.elf: %.o
+ut: $(OBJECTS)
 	+@echo "linking '$(notdir $@)'"
 	@$(TOOLCHAIN)gcc $(CFLAGS) $^ -o $@ $(LIBS)
-
-all: $(OUTPUTS)
 
 clean:
 	@find . -name '*.o' -delete
