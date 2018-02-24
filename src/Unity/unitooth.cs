@@ -13,6 +13,7 @@ public class unitooth : MonoBehaviour {
     public byte[] btaddr;
 
     public string macAddress;
+    public int port;
 
     public struct SOCKADDR_BTH
     {
@@ -35,12 +36,12 @@ public class unitooth : MonoBehaviour {
         return socket(AF_BTH, SOCK_STREAM, BTHPROTO_RFCOMM);
     }
 
-    public static int connect(int socketfd, byte[] btaddr)
+    public static int connect(int socketfd, byte[] btaddr, int port)
     {
         SOCKADDR_BTH newSocketAddr = new SOCKADDR_BTH();
         newSocketAddr.addressFamily = (ushort)AF_BTH;
         newSocketAddr.btAddr = btaddr;
-        newSocketAddr.port = 0;
+        newSocketAddr.port = (ulong)port;
         return connect(socketfd, newSocketAddr, sizeof(ushort) + 6 + sizeof(ulong));
 
     }
@@ -77,7 +78,7 @@ public class unitooth : MonoBehaviour {
             {
                 btaddr[i] = byte.Parse(bytes[i], System.Globalization.NumberStyles.HexNumber);
             }
-            int res = connect(uniSocket, btaddr);
+            int res = connect(uniSocket, btaddr, port);
             Debug.Log("Result: " + res);
             if (res == -1)
             {
