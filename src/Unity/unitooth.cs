@@ -12,6 +12,8 @@ public class unitooth : MonoBehaviour {
     private static int INVALID_SOCKET = -1; //invalid socket identifier
     private static int uniSocket;
 
+    public string macAddress;
+
 #if UNITY_STANDALONE_WIN || UNITY_EDITOR
     [DllImport("ws2_32.dll", EntryPoint = "socket")]
     public static extern int socket(int af, int type, int protocol);
@@ -28,6 +30,33 @@ public class unitooth : MonoBehaviour {
         if (uniSocket == INVALID_SOCKET)
         {
             Debug.LogError("Unable to start bluetooth. Please make sure Bluetooth is enabled on your computer");
+        }
+
+        if (macAddress != null)
+        {
+            macAddress = macAddress.Replace("-", ""); //get rid of any shit people put into the string
+            macAddress = macAddress.Replace(":", "");
+            macAddress = macAddress.Replace(".", "");
+
+            Debug.Log(macAddress);
+            if (macAddress.Length != 12)
+            {
+                Debug.LogError("Invalid MAC Address entered");
+            }
+            string[] bytes = new string[6];
+            int j = 0;
+            for (int i = 0; i < 12; i += 2)
+            {
+                bytes[j] = macAddress.Substring(i, 2);
+                j++;
+            }
+            byte[] btaddr = new byte[6];
+            for (int i = 0; i < 6; i++)
+            {
+                btaddr[i] = byte.Parse(bytes[i], System.Globalization.NumberStyles.HexNumber);
+            }
+        } else {
+            Debug.LogError("Please make sure to enter MAC Address of target device into script");
         }
         
 	}
