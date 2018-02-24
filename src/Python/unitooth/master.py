@@ -17,7 +17,8 @@ def listen(protocol):
         return False
 
     ssock = bluetooth.BluetoothSocket(protocol)
-    port = bluetooth.get_available_port(protocol)
+    ssock.bind(("", bluetooth.PORT_ANY))
+    ssock.listen(1)
 
     bluetooth.advertise_service(ssock, SDP_NAME, SDP_UUID)
 
