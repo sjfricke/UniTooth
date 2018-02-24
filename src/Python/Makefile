@@ -1,10 +1,18 @@
-.PHONY: clean install
+.PHONY: clean install wipe
 
 PROJECT=unitooth
 
-install:
-	@[ -d venv ] && pip install -e .
+venv:
+	@virtualenv venv
+	+@echo "Run '. ./venv/bin/activate' first."
+	@exit 1
 
-#@rm -rf $(PROJECT).egg-info
+install: venv
+	@pip install -e .
+
 clean:
 	@find -name '*.pyc' -delete
+
+wipe:
+	@rm -rf $(PROJECT).egg-info
+	@rm -rf venv
