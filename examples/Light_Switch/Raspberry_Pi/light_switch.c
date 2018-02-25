@@ -1,7 +1,7 @@
 
 #include <stdio.h>
 #include <wiringPi.h>
-
+#include <softPwm.h>
 #include <ads1115.h>
 #define MY_BASE 2222
 
@@ -39,7 +39,8 @@ int main(int argc, char* argv[]) {
   wiringPiISR (BUTTON, INT_EDGE_BOTH, &buttonISR);
 
   // Setup LED light
-  pinMode(LED, OUTPUT);
+  softPwmCreate(LED, 0, 255);
+  //  pinMode(LED, PWM_OUTPUT);
 
   // Setup Analog input from ads1115
   ads1115Setup (MY_BASE, 0x48);
@@ -49,7 +50,7 @@ int main(int argc, char* argv[]) {
 
     pot_in = analogRead(MY_BASE + 0)/POT_INTERVAL;
     printf("X: %d\n", pot_in);
-
+    softPwmWrite(LED, pot_in);
     usleep(100000);
   }
 }
