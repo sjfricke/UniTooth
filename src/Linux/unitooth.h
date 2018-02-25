@@ -1,11 +1,28 @@
 #ifndef _UNITOOTH__H
 #define _UNITOOTH__H
 
-int run_listen(int argc, char **argv);
-int run_connect(int argc, char **argv);
-int run_find(int argc, char **argv);
+typedef void (*callbackStr)(char*);
 
-#define camera-pi	B8:27:EB:A5:10:E2
-#define zero-pi		B8:27:EB:56:69:24
+// RFCOMM
+int serverR();
+
+void *server_daemonR();
+
+int sendR(char *msg);
+
+void *recv_handleR();
+
+void set_callbackR(callbackStr callback);
+
+// L2CAP
+int serverL();
+
+void *server_daemonL();
+
+int sendL(char *msg);
+
+void *recv_handleL();
+
+void set_callbackL(callbackStr callback);
 
 #endif
