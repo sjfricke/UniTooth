@@ -1,6 +1,6 @@
 # UniTooth
-
-Unity Window Bluetooth Library for Embedded Systems communication
+![Logo](Unitooth High Level Diagram.png)
+A Unity Bluetooth Library for Windows and Embedded Systems communication
 
 ## Python Package
 
