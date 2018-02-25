@@ -1,5 +1,5 @@
 # UniTooth
-![Logo](unitooth_logo.png)
+![Logo](unitooth_logo_thumbnail.png)
 
 # What is 
 A Unity Bluetooth Library for Windows and Embedded Systems communication. This is designed to making Bluetooth super easy to add to any project.
@@ -30,4 +30,5 @@ User Installation:
 We are **very** open to any help with this project. Please read the [Contribution information](https://github.com/sjfricke/UniTooth/blob/master/CONTRIBUTING.md) for more information.
 
 ============
+
 UniTooth started development at Hack Illionis 2018
