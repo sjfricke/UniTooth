@@ -7,6 +7,8 @@
 
 #include <sys/ioctl.h>
 #include <sys/mman.h>
+
+#include <sys/types.h>
 #include <sys/socket.h>
 
 #include <bluetooth/bluetooth.h>
@@ -15,10 +17,16 @@
 #include <linux/videodev2.h>
 
 #define PORT 0x1001
-#define BT_MAC "02:00:1B:D3:2E:51"
+#define BT_MAC "B8:27:EB:DF:33:A1"
 
 // TODO - img_buf / buf naming
 static uint8_t *img_buf;
+
+struct sockaddr_l2 addr = { 0 };
+static int my_socket;
+static int status;
+static char img_meta[32];
+static FILE* pFile;
 
 static int xioctl(int fd, int request, void *arg)
 {
@@ -95,8 +103,8 @@ int print_caps(int fd)
 
   struct v4l2_format fmt = {0};
   fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-  fmt.fmt.pix.width = 640;
-  fmt.fmt.pix.height = 480;
+  fmt.fmt.pix.width = 480;
+  fmt.fmt.pix.height = 320;
   //fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_BGR24;
   //fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_GREY;
   fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_MJPEG;
@@ -146,16 +154,15 @@ int init_mmap(int fd)
 
   img_buf = mmap (NULL, buf.length, PROT_READ | PROT_WRITE, MAP_SHARED, fd, buf.m.offset);
   printf("Length: %d\nAddress: %p\n", buf.length, img_buf);
-  printf("Image Length: %d\n", buf.bytesused);
-
+  
   return 0;
 }
 
 int capture_image(int fd, int my_socket)
 {
   int status;
-  int i;
-  int buf_size = 550;
+  int i, j = 0;
+  int buf_size = 600;
   struct v4l2_buffer buf = {0};
   buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
   buf.memory = V4L2_MEMORY_MMAP;
@@ -171,7 +178,7 @@ int capture_image(int fd, int my_socket)
       perror("Start Capture");
       return 1;
     }
-
+  
   fd_set fds;
   FD_ZERO(&fds);
   FD_SET(fd, &fds);
@@ -190,18 +197,34 @@ int capture_image(int fd, int my_socket)
       return 1;
     }
 
- 
-  printf("buf lenght: %d\n", buf.length);
-  for (i = 0; i < buf.length; i++) {
-    status = send(my_socket, img_buf + i, buf_size, 0);
-    i += buf_size;
-    //    printf("byte sent: %d\n", status);
-    //usleep(1000);
+  /*
+  pFile = fopen("test.jpeg","wb");
+  if (pFile) {
+    fwrite(img_buf, buf.length, 1, pFile);
+    puts("Saved jpg");
+  } else {
+    puts("Can't open file");
+  }  
+  */
+  printf("--buf lenght: %d\n", buf.length);
+  printf("--Image Length: %d\n", buf.bytesused);
+
+  
+  sprintf(img_meta, "%d",  buf.bytesused);
+  
+  status = sendto(my_socket, img_meta, 4, 0, (struct sockaddr *)&addr, sizeof(addr));
+  
+  for (i = 0, j=0; i < buf.bytesused; i += buf_size, j++) {
+    //    memset((void*)(img_buf + i), j, 1);
+    //  printf("T: %d\n", j);
+    status = sendto(my_socket, img_buf + i, buf_size, 0, (struct sockaddr *)&addr, sizeof(addr));
   }
   
   if( status < 0 ) perror("No data sent");  
-  printf ("sent image\n");
+  printf ("sent image: %d bytes\n", i);
+  
 
+  
   /*   IplImage* frame;
        CvMat cvmat = cvMat(480, 640, CV_8UC3, (void*)img_buf);
        frame = cvDecodeImage(&cvmat, 1);
@@ -215,11 +238,10 @@ int capture_image(int fd, int my_socket)
 
 int main()
 {
-  struct sockaddr_l2 addr = { 0 };
-  int my_socket, status;
-  //  char dest[18] = 
   int fd;
 
+
+  
   fd = open("/dev/video0", O_RDWR);
   if (fd == -1)
     {
