@@ -12,6 +12,8 @@ public class unitooth : MonoBehaviour {
 
     [DllImport("unitoothLib")]
     public unsafe static extern int uniConnect(ulong mac_address);
+    [DllImport("unitoothLib")]
+    public static extern int receiveData();
 
 #endif
 
@@ -32,10 +34,16 @@ public class unitooth : MonoBehaviour {
         } else {
             Debug.LogError("Please make sure to enter MAC Address of target device into script");
         }
+
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		
-	}
+        int data = receiveData();
+        if (data != -1)
+        {
+            Debug.Log("Data: " + data);
+        }
+        
+    }
 }
