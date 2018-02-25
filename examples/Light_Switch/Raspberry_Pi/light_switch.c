@@ -2,6 +2,7 @@
 #include <wiringPi.h>
 #include <softPwm.h>
 #include <ads1115.h>
+#include <stdlib.h>
 
 #include "../../../src/Linux/unitooth.h"
 
@@ -34,8 +35,9 @@ void buttonISR(void) {
 }
 
 void onData(char* value) {
-  softPwmWrite(LED, atoi(value));
-  fprintf(stdout, "PWM: %s\n", value); 
+  int val = atoi(value);
+  softPwmWrite(LED, (int)value[0]);
+  fprintf(stdout, "PWM: %d\n", value[0]);
 }
 
 int main(int argc, char* argv[]) {
