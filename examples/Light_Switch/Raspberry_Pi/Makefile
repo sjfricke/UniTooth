@@ -3,5 +3,5 @@ CFLAGS = -Wall -Werror -c
 WIRINGPI = -lwiringPi
 
 main:
-	$(CC) light_switch.c $(WIRINGPI) -o light_switch
+	gcc ../../../src/Linux/unitooth_L2CAP.c ../../../src/Linux/unitooth_RFCOMM.c light_switch.c  -lwiringPi -lbluetooth -lpthread -o light_switch
 

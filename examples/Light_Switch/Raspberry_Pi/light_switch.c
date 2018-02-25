@@ -1,8 +1,10 @@
-
 #include <stdio.h>
 #include <wiringPi.h>
 #include <softPwm.h>
 #include <ads1115.h>
+
+#include "../../../src/Linux/unitooth.h"
+
 #define MY_BASE 2222
 
 #define BUTTON 4
@@ -28,9 +30,19 @@ void buttonISR(void) {
   last_isr_time = isr_time;
 }
 
+void onData(char* value) {
+  softPwmWrite(LED, atoi(value));
+  fprintf(stdout, "PWM: %s\n", value); 
+}
+
 int main(int argc, char* argv[]) {
 
-  int pot_in;
+  serverR();
+  set_callbackR(onData);
+
+  int pot_in;  
+  char sendMesg[32];
+
   wiringPiSetupGpio();
 
   // Setup button
@@ -49,8 +61,10 @@ int main(int argc, char* argv[]) {
   while(1) {
 
     pot_in = analogRead(MY_BASE + 0)/POT_INTERVAL;
-    printf("X: %d\n", pot_in);
-    softPwmWrite(LED, pot_in);
+    sprintf(sendMesg, "%d", pot_in);
+
+    sendR(sendMesg);
+    
     usleep(100000);
   }
 }

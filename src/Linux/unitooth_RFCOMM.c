@@ -23,6 +23,9 @@ static int client = -1;		// client fd
 static callbackStr onData = NULL;
 static char recv_buf[1024];
 
+static void *server_daemonR();
+static void *recv_handlerR();
+
 int serverR()
 {
 	return pthread_create(&server_thread,
@@ -33,38 +36,43 @@ int serverR()
 
 void *server_daemonR()
 {
-	char command[64];
+  int status;
+  char command[64];
 
-	// Turn on discoverable
-	sprintf(command, "echo -e 'discoverable on\nquit' | bluetoothctl");
-	system(command);
+  // Turn on discoverable
+  sprintf(command, "echo -e 'discoverable on\nquit' | bluetoothctl");
+  system(command);
 
-	struct sockaddr_rc loc_addr = { 0 }, rem_addr = { 0 };
-	//char buf[1024] = { 0 };
-	socklen_t opt = sizeof(rem_addr);
+  struct sockaddr_rc loc_addr = { 0 }, rem_addr = { 0 };
+  //char buf[1024] = { 0 };
+  socklen_t opt = sizeof(rem_addr);
 
-	//allocate socket
-	serv_sock = socket(AF_BLUETOOTH, SOCK_SEQPACKET, BTPROTO_RFCOMM);
+  //allocate socket
+  serv_sock = socket(AF_BLUETOOTH, SOCK_STREAM, BTPROTO_RFCOMM);
+  fprintf(stdout, "socket %d\n", serv_sock);  
+  
+  // bind socket to port 1 of the first available 
+  // bluetooth adapter
+  loc_addr.rc_family = AF_BLUETOOTH;
+  loc_addr.rc_bdaddr = *BDADDR_ANY;
+  loc_addr.rc_channel = (uint8_t) 1;
 
-	// bind socket to port 1 of the first available 
-	// bluetooth adapter
-	loc_addr.rc_family = AF_BLUETOOTH;
-	loc_addr.rc_bdaddr = *BDADDR_ANY;
-	loc_addr.rc_channel = (uint8_t) 1;
+  status = bind(serv_sock, (struct sockaddr *)&loc_addr, sizeof(loc_addr));
+  fprintf(stdout, "bind %d\n", status);
 
-	bind(serv_sock, (struct sockaddr *)&loc_addr, sizeof(loc_addr));
-
-	// put socket into listening mode
-	listen(serv_sock, 1);
-
-	// accept one connection
-	client = accept(serv_sock, (struct sockaddr *)&rem_addr, &opt);
-	client_connected = 1;	
-	pthread_create(&rcv_handler_theread,
-			NULL,
-			recv_handleR,
-			NULL);
-	return NULL;
+  // put socket into listening mode
+  status = listen(serv_sock, 3);
+  fprintf(stdout, "Listen  %d\n", status);
+  
+  // accept one connection
+  client = accept(serv_sock, (struct sockaddr *)&rem_addr, &opt);
+  client_connected = 1;
+  fprintf(stdout, "CONNECTED %d\n",client);
+  pthread_create(&rcv_handler_theread,
+		 NULL,
+		 recv_handlerR,
+		 NULL);
+  return NULL;
 }
 
 int sendR (char *msg)
@@ -77,7 +85,7 @@ int sendR (char *msg)
 
 }
 
-void *recv_handleR()
+void *recv_handlerR()
 {
 	int checkVal = -1;
 	while(1)

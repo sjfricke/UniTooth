@@ -1,3 +1,4 @@
+
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -10,7 +11,7 @@
 #include <pthread.h>
 
 #include <bluetooth/bluetooth.h>
-#include <bluetooth/rfcomm.h>
+#include <bluetooth/l2cap.h>
 
 #include "unitooth.h"
 
@@ -23,6 +24,9 @@ static int client = -1;		// client fd
 static callbackStr onData = NULL;
 static char recv_buf[1024];
 
+static void *server_daemonL();
+static void *recv_handlerL();
+
 int serverL()
 {
 	return pthread_create(&server_thread,
@@ -30,6 +34,7 @@ int serverL()
 			server_daemonL,
 		       	NULL);
 }
+
 
 void *server_daemonL ()
 {
@@ -39,7 +44,8 @@ void *server_daemonL ()
 	sprintf(command, "echo -e 'discoverable on\nquit' | bluetoothctl");
 	system(command);
 
-	struct sockaddr_l2 loc_addr = { 0 }, rem_addr = { 0 };
+	struct sockaddr_l2 loc_addr = { 0 };
+	struct sockaddr_l2 rem_addr = { 0 };
 	char buf[1024] = { 0 };
 	socklen_t opt = sizeof(rem_addr);
 
@@ -61,9 +67,9 @@ void *server_daemonL ()
 	client = accept(serv_sock, (struct sockaddr *)&rem_addr, &opt);
 	client_connected = 1;	
 	pthread_create(&rcv_handler_theread,
-			NULL,
-			recv_handler,
-			NULL);
+		       NULL,
+		       recv_handlerL,
+		       NULL);
 	return NULL;
 }
 
@@ -77,7 +83,7 @@ int sendL (char *msg)
 
 }
 
-void *recv_handleL ()
+void *recv_handlerL ()
 {
 	int checkVal = -1;
 	while(1)
