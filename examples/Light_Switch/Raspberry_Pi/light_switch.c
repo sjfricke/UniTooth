@@ -13,6 +13,7 @@
 #define DEBOUNCE_THRESH 200
 
 static last_isr_time = 0;
+static char sendMesg[32];
 
 void buttonISR(void) {
 
@@ -25,6 +26,8 @@ void buttonISR(void) {
     } else {
       puts("button off");
     }
+    sprintf(sendMesg, "%d", digitalRead(BUTTON));
+    sendR(sendMesg);
   }
 
   last_isr_time = isr_time;
@@ -41,7 +44,6 @@ int main(int argc, char* argv[]) {
   set_callbackR(onData);
 
   int pot_in;  
-  char sendMesg[32];
 
   wiringPiSetupGpio();
 
@@ -62,8 +64,6 @@ int main(int argc, char* argv[]) {
 
     pot_in = analogRead(MY_BASE + 0)/POT_INTERVAL;
     sprintf(sendMesg, "%d", pot_in);
-
-    sendR(sendMesg);
     
     usleep(100000);
   }

@@ -10,14 +10,14 @@ int main(int argc, char **argv)
     char buf[1024] = { 0 };
     int s, client, bytes_read;
     socklen_t opt = sizeof(rem_addr);
-    char command[64];
+
+char command[64];
+
     // allocate socket
     // Turn on discoverable
+	s = socket(AF_BLUETOOTH, SOCK_STREAM, BTPROTO_RFCOMM);
     sprintf(command, "echo -e 'discoverable on\nquit' | bluetoothctl");
     system(command);
-
-    s = socket(AF_BLUETOOTH, SOCK_STREAM, BTPROTO_RFCOMM);
-
 
     // bind socket to port 1 of the first available 
     // local bluetooth adapter
@@ -47,4 +47,3 @@ int main(int argc, char **argv)
     close(s);
     return 0;
 }
-
