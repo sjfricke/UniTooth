@@ -17,8 +17,8 @@
 #define PORT 0x1001
 #define BT_MAC "02:00:1B:D3:2E:51"
 
-// TODO - buffer / buf naming
-static uint8_t *buffer;
+// TODO - img_buf / buf naming
+static uint8_t *img_buf;
 
 static int xioctl(int fd, int request, void *arg)
 {
@@ -144,8 +144,8 @@ int init_mmap(int fd)
       return 1;
     }
 
-  buffer = mmap (NULL, buf.length, PROT_READ | PROT_WRITE, MAP_SHARED, fd, buf.m.offset);
-  printf("Length: %d\nAddress: %p\n", buf.length, buffer);
+  img_buf = mmap (NULL, buf.length, PROT_READ | PROT_WRITE, MAP_SHARED, fd, buf.m.offset);
+  printf("Length: %d\nAddress: %p\n", buf.length, img_buf);
   printf("Image Length: %d\n", buf.bytesused);
 
   return 0;
@@ -155,6 +155,7 @@ int capture_image(int fd, int my_socket)
 {
   int status;
   int i;
+  int buf_size = 550;
   struct v4l2_buffer buf = {0};
   buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
   buf.memory = V4L2_MEMORY_MMAP;
@@ -189,18 +190,20 @@ int capture_image(int fd, int my_socket)
       return 1;
     }
 
+ 
   printf("buf lenght: %d\n", buf.length);
   for (i = 0; i < buf.length; i++) {
-    status = send(my_socket, buffer + i, 5000, 0);
-    i += 5000;
-    printf("byte sent: %d\n", status);
+    status = send(my_socket, img_buf + i, buf_size, 0);
+    i += buf_size;
+    //    printf("byte sent: %d\n", status);
+    //usleep(1000);
   }
   
   if( status < 0 ) perror("No data sent");  
   printf ("sent image\n");
 
   /*   IplImage* frame;
-       CvMat cvmat = cvMat(480, 640, CV_8UC3, (void*)buffer);
+       CvMat cvmat = cvMat(480, 640, CV_8UC3, (void*)img_buf);
        frame = cvDecodeImage(&cvmat, 1);
        cvNamedWindow("window",CV_WINDOW_AUTOSIZE);
        cvShowImage("window", frame);
