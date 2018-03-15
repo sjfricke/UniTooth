@@ -1,5 +1,9 @@
+
 #ifndef _UNITOOTH__H
 #define _UNITOOTH__H
+
+#include <errno.h>
+#include <fcntl.h>
 
 typedef void (*callbackStr)(char*);
 
@@ -16,5 +20,11 @@ int serverL();
 int sendL(char *msg);
 
 void set_callbackL(callbackStr callback);
+
+// Camera
+int capture_init();
+int capture_image();
+
+void unitooth_close();
 
 #endif
