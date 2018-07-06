@@ -1,16 +1,16 @@
 # UniTooth
 ![Logo](unitooth_logo_thumbnail.png)
 
-# What is 
-A Unity Bluetooth Library for Windows and Embedded Systems communication. This is designed to making Bluetooth super easy to add to any project.
+# What it is 
+A Unity Bluetooth Library for Windows and Embedded Systems communication. This is designed for making bluetooth super easy to add to any project.
 ![Logo](Unitooth%20High%20Level%20Diagram.png)
 
 # Why
-With all the upcoming untethered VR and AR expereinces, we wanted to help create a way to help make bluetooth an easy integration for anyone. As of now, the main Bluetooth support in Unity is only for Android/iOS development. Windows has a very low support. Bluetooth 5.0 is going to be a huge improvement with its 48MBps speed and 800 Feet range. We are hoping to be the go-to source for all future Unity to embedded systems projects.
+With all the upcoming untethered VR and AR expereinces, we wanted to help create a way to help make bluetooth an easy integration for anyone. As of now, the main bluetooth support in Unity is only for Android/iOS development. Windows has a very low support. Bluetooth 5.0 is going to be a huge improvement with its 48MBps speed and 800 foot range. We are hoping to be the go-to source for all future Unity to embedded systems projects.
 
 # ATTENTION
 
-This was produced during [Hack Illionis 2018](https://devpost.com/software/unitooth) and ran into MANY issues, mainly the unability to work with BlueZ as well as we hoped. We still got a working demo to work, but it was more of a hack then a valid way of doing a library like this. We are all students and while want to get back to this project, until there is a true interest invested we will need to put it on side burnere. **please** reach out with questions about how we attempted to do anything or want to try creating your own version, we will be happy to give name out to anyone who wants to do this the correct way.
+This was produced during [Hack Illionis 2018](https://devpost.com/software/unitooth) and we ran into MANY issues, mainly the inability to work with BlueZ as well as we had hoped. We still got a working demo to work, but it was more of a hack then a valid way of using a library like this. We are all students and while we want to get back to this project, until there is true interest invested we will need to put it on the side burner. **Please** reach out with questions about how we attempted to do anything or want to try creating your own version, we will be happy to give information out to anyone who wants to do this the correct way.
 
 ~ Spencer
 
